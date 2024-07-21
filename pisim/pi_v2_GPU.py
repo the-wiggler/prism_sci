@@ -6,8 +6,8 @@ import time
 
 start = time.time() # just times how long the process takes
 
-batches = 10 # number of times that sets of pi should be estimated, increasing by a factor of 10 for each permutation
-pi_per_batch = 3 # how many estimates of pi should be output per batch
+batches = 11 # number of times that sets of pi should be estimated, increasing by a factor of 10 for each permutation
+pi_per_batch = 2 # how many estimates of pi should be output per batch
 
 chunk_size = 10**7
 
@@ -23,7 +23,7 @@ def pi_estimate(n):
             current_chunk = min(n, chunk_size)
             x = cp.random.uniform(-1, 1, current_chunk)
             y = cp.random.uniform(-1, 1, current_chunk)
-            inside_circle = cp.sum((x ** 2 + y ** 2) <= 1)
+            inside_circle = cp.sum((x ** 2 + y ** 2) <= 1, dtype=cp.int64)
             total_inside_circle += inside_circle
             total_points += current_chunk
             n -= current_chunk
