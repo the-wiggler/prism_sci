@@ -1,3 +1,2 @@
 # prism_sci
- Projects
- Hello!
+ Hello! These are some of my random projects.
