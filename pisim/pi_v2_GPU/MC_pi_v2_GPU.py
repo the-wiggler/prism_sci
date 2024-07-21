@@ -6,7 +6,7 @@ import os
 
 start = time.time() # just times how long the process takes
 
-batches = 11 # number of times that sets of pi should be estimated, increasing by a factor of 10 for each permutation
+batches = 9 # number of times that sets of pi should be estimated, increasing by a factor of 10 for each permutation
 pi_per_batch = 2 # how many estimates of pi should be output per batch
 
 chunk_size = 10**7
