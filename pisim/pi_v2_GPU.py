@@ -31,6 +31,7 @@ def pi_estimate(n):
         estimate_output = (4 * (total_inside_circle / total_points))
         return estimate_output
 
+
 # loop that runs the pi_estimate function over a number of permutations and organizes them into a matrix
 histories = 10
 history_count_list = []
