@@ -1,8 +1,8 @@
 import cupy as cp # if not using nvidia GPU with proper dependencies please convert all "cp" to "np". It should work the same
 import numpy as np
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 import time
+import os
 
 start = time.time() # just times how long the process takes
 
@@ -69,18 +69,12 @@ std_list = cp.array(std_list)
 print("STANDARD DEVIATION FOR PI OUTPUT ARRAY")
 print(std_list)
 
-# convert to np array
-np_avg_calc_pi = avg_calc_pi.get()
+# convert to np array and save
+np.save(os.path.join('np_store', 'calc_pi.npy'), calc_pi.get())
+np.save(os.path.join('np_store', 'avg_calc_pi.npy'), avg_calc_pi.get())
+np.save(os.path.join('np_store', 'std_list.npy'), std_list.get())
+np.save(os.path.join('np_store', 'history_count_list.npy'), history_count_list)
 
-
-# pi accuracy v history count
-plt.title("Pi Estimation v. History Count")
-plt.xlabel("History Count")
-plt.ylabel("Pi Estimate")
-plt.xscale('log')
-plt.axhline(y=cp.pi, color='gray', linestyle='dotted', linewidth=1)
-plt.plot(history_count_list, np_avg_calc_pi, marker='o', linestyle='-', color='r')
 
 print(f'EXECUTION TIME: {time.time() - start} SECONDS') # just times how long the process takes
 
-plt.show()
