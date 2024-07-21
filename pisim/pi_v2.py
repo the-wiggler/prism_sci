@@ -1,9 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import time
 
-batches = 6 # number of times that sets of pi should be estimated, increasing by a factor of 10 for each permutation
-pi_per_batch = 10 # how many estimates of pi should be output per batch
+start = time.time() # just times how long the process takes
+
+
+batches = 9 # number of times that sets of pi should be estimated, increasing by a factor of 10 for each permutation
+pi_per_batch = 3 # how many estimates of pi should be output per batch
 
 chunk_size = 10**7
 
@@ -65,5 +69,7 @@ plt.ylabel("Pi Estimate")
 plt.xscale('log')
 plt.axhline(y=np.pi, color='gray', linestyle='dotted', linewidth=1)
 plt.plot(history_count_list, avg_calc_pi, marker='o', linestyle='-', color='r')
+
+print(f'EXECUTION TIME: {time.time() - start} SECONDS') # just times how long the process takes
 
 plt.show()
