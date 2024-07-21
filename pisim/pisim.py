@@ -1,7 +1,7 @@
 from random import uniform
 from itertools import groupby
 
-repetition_factor = 7 # the sequential log permutations (starting at 10) to which pi should calculate
+repetition_factor = 4 # the sequential log permutations (starting at 10) to which pi should calculate
 num_pi_calc = 5 # the number of batches per permutation
 final_values = []
 
