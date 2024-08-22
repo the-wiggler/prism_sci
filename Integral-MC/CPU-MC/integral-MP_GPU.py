@@ -48,7 +48,7 @@ for i in range(batches):
         num.append(int_estimate(histories, a, b))
     history_count_list.append(histories)
     calc_int.append(num)
-    histories *= 10
+    histories *= 10 # multiplies the history count by 10 each batch, used for data analysis in intplot.py -- can be safely removed/edited
 
 
 # Print the integral values
