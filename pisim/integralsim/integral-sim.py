@@ -7,12 +7,15 @@ import os
 start = time.time() # just times how long the process takes
 chunk_size = 10**7
 batches = 1 # number of times that sets of int should be estimated, increasing by a factor of 10 for each permutation
-int_per_batch = 2 # how many estimates of int should be output per batch
-calc_int = []
+int_per_batch = 5 # how many estimates of int should be output per batch
+histories = 100000000
 
+
+a = cp.pi # lower bound
+b = cp.pi * 3 # upper bound
 # THE FUNCTION TO INTEGRATE
 def f(x):
-    return x ** 2
+    return cp.sin(x) * cp.tan(cp.sqrt(2 * x))
 
 # monte carlo method to calculate int
 def int_estimate(n):
@@ -23,8 +26,7 @@ def int_estimate(n):
         while n > 0:
             current_chunk = min(n, chunk_size)
             x = cp.random.uniform(a, b, current_chunk)
-            function = f(x)
-            inside_func = cp.sum(function)
+            inside_func = cp.sum(f(x))
             total_inside += inside_func
             total_points += current_chunk
             n -= current_chunk
@@ -32,11 +34,8 @@ def int_estimate(n):
         estimate_output = (total_inside / total_points)
         return estimate_output
 
-a = 0 # lower bound
-b = 1 # upper bound
-
 # loop that runs the int_estimate function over a number of permutations and organizes them into a matrix
-histories = 10000
+calc_int = []
 history_count_list = []
 for i in range(batches):
     num = []
@@ -44,7 +43,7 @@ for i in range(batches):
         num.append(int_estimate(histories))
     history_count_list.append(histories)
     calc_int.append(num)
-    histories *= 10
+    # histories *= 10
 
 # print the int values
 print(f"int OUTPUT ARRAY: [{batches} BATCHES WITH {int_per_batch} ESTIMATES]")
