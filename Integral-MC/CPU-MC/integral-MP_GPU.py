@@ -1,4 +1,6 @@
-import cupy as cp  # If not using an NVIDIA GPU, replace 'cp' with 'np'
+# ** THIS PROGRAM ONLY FUNCTIONS ON NVIDIA GPUS WITH PROPER DEPENDENCIES INSTALLED ** #
+# CUPY IS A NUMPY LIBRARY OPTIMIZED TO FUNCTION WITH CUDA #
+import cupy as cp
 import numpy as np
 from tqdm import tqdm
 import time
@@ -19,18 +21,18 @@ def f(x):
 
 # Monte Carlo method to calculate the integral over (a, b)
 def int_estimate(n, a, b):
-    total_sum = 0 # total amount of points 'under the curve', or inside the function
-    total_points = 0 # total number of point estimates taken
+    total_func = 0 # sum of the height values taken of the function values
+    total_points = 0 # total number of point (x) estimates taken
     num_chunks = (n + chunk_size - 1) // chunk_size
     with tqdm(total=num_chunks) as pbar: # defines progress bar
         while n > 0: # continues monte carlo until permutations are finished
             current_chunk = min(n, chunk_size)
             x = cp.random.uniform(a, b, current_chunk) # takes a random number x within the bounds of the integral
-            total_sum += cp.sum(f(x)) # substitutes each x value into the function to get their y value, or vertical distance from y=0
+            total_func += cp.sum(f(x)) # substitutes each x value into the function to get their y value, or vertical distance from y=0
             total_points += current_chunk # adds total amount of points
             n -= current_chunk # lets n approach 0
             pbar.update(1) # updates progress bar
-        estimate_output = (b - a) * (total_sum / total_points) # (b-a) is the width of the integral----(sum/points) calculates the average height of the function----its like finding the area of a square
+        estimate_output = (b - a) * (total_func / total_points) # (b-a) is the width of the integral----(sum/points) calculates the average height of the function----its like finding the area of a square
         return estimate_output
 
 # Integration bounds
