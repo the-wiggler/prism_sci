@@ -1,58 +1,61 @@
-import cupy as cp # if not using nvidia GPU with proper dependencies please convert all "cp" to "np". It should work the same
+import cupy as cp  # If not using an NVIDIA GPU, replace 'cp' with 'np'
 import numpy as np
 from tqdm import tqdm
 import time
 import os
 
-start = time.time() # just times how long the process takes
-chunk_size = 10**7
-batches = 1 # number of times that sets of int should be estimated, increasing by a factor of 10 for each permutation
-int_per_batch = 5 # how many estimates of int should be output per batch
-histories = 100000000
+start = time.time()  # Start timing the process
 
+batches = 9  # Number of times that sets of integral should be estimated ( y in array )
+int_per_batch = 2  # How many estimates of integral should be output per batch ( x in array )
 
-a = cp.pi # lower bound
-b = cp.pi * 3 # upper bound
-# THE FUNCTION TO INTEGRATE
+chunk_size = 10**7 # for RAM management, decrease for less ram (current system uses 32gb) -- untested at higher values
+
+calc_int = [] # list that the calculated integral estimations are put into
+
+# INPUT FUNCTION HERE
 def f(x):
-    return cp.sin(x) * cp.tan(cp.sqrt(2 * x))
+    return cp.sqrt(9-(x-3)**2)
 
-# monte carlo method to calculate int
-def int_estimate(n):
-    total_inside = 0
-    total_points = 0
+# Monte Carlo method to calculate the integral over (a, b)
+def int_estimate(n, a, b):
+    total_sum = 0 # total amount of points 'under the curve', or inside the function
+    total_points = 0 # total number of point estimates taken
     num_chunks = (n + chunk_size - 1) // chunk_size
-    with tqdm(total=num_chunks) as pbar:
-        while n > 0:
+    with tqdm(total=num_chunks) as pbar: # defines progress bar
+        while n > 0: # continues monte carlo until permutations are finished
             current_chunk = min(n, chunk_size)
-            x = cp.random.uniform(a, b, current_chunk)
-            inside_func = cp.sum(f(x))
-            total_inside += inside_func
-            total_points += current_chunk
-            n -= current_chunk
-            pbar.update(1)
-        estimate_output = (total_inside / total_points)
+            x = cp.random.uniform(a, b, current_chunk) # takes a random number x within the bounds of the integral
+            total_sum += cp.sum(f(x)) # substitutes each x value into the function to get their y value, or vertical distance from y=0
+            total_points += current_chunk # adds total amount of points
+            n -= current_chunk # lets n approach 0
+            pbar.update(1) # updates progress bar
+        estimate_output = (b - a) * (total_sum / total_points) # (b-a) is the width of the integral----(sum/points) calculates the average height of the function----its like finding the area of a square
         return estimate_output
 
-# loop that runs the int_estimate function over a number of permutations and organizes them into a matrix
-calc_int = []
-history_count_list = []
+# Integration bounds
+a = 0  # Lower bound of the integral
+b = 5  # Upper bound of the integral
+
+# Loop that runs the int_estimate function over a number of permutations and organizes them into a matrix
+histories = 100 # number of permutations of integral estimate to perform
+history_count_list = [] # records number of histories performed per batch
 for i in range(batches):
     num = []
     for i in range(int_per_batch):
-        num.append(int_estimate(histories))
+        num.append(int_estimate(histories, a, b))
     history_count_list.append(histories)
     calc_int.append(num)
-    # histories *= 10
+    histories *= 10
 
-# print the int values
-print(f"int OUTPUT ARRAY: [{batches} BATCHES WITH {int_per_batch} ESTIMATES]")
+
+# Print the integral values
+print(f"INTEGRAL OUTPUT ARRAY: [{batches} BATCHES WITH {int_per_batch} ESTIMATES]")
 calc_int = cp.array(calc_int)
 print(calc_int)
 
-
-# average the matrix of int values
-print("int BATCH AVERAGE VALUES")
+# Average the matrix of integral values
+print("INTEGRAL BATCH AVERAGE VALUES")
 avg_calc_int = []
 for i in range(len(calc_int)):
     avg_calc_int_y = []
@@ -61,22 +64,20 @@ for i in range(len(calc_int)):
 avg_calc_int = cp.array(avg_calc_int)
 print(avg_calc_int)
 
-# take standard deviations of calc_int array
+# Take standard deviations of calc_int array
 std_list = []
 for i in range(batches):
     std_y = []
     std_y.append(cp.std(calc_int[i]))
     std_list.append(std_y)
 std_list = cp.array(std_list)
-print("STANDARD DEVIATION FOR int OUTPUT ARRAY")
+print("STANDARD DEVIATION FOR INTEGRAL OUTPUT ARRAY")
 print(std_list)
 
-# convert to np array and save
+# Convert to numpy array and save
 np.save(os.path.join('np_store', 'calc_int.npy'), calc_int.get())
 np.save(os.path.join('np_store', 'avg_calc_int.npy'), avg_calc_int.get())
 np.save(os.path.join('np_store', 'std_list.npy'), std_list.get())
 np.save(os.path.join('np_store', 'history_count_list.npy'), history_count_list)
 
-
-print(f'EXECUTION TIME: {time.time() - start} SECONDS') # just times how long the process takes
-
+print(f'EXECUTION TIME: {time.time() - start} SECONDS')  # Output the execution time
