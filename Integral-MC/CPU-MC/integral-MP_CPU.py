@@ -6,8 +6,8 @@ import os
 
 start = time.time()  # Start timing the process
 
-batches = 5  # Number of times that sets of integral should be estimated ( y in array )
-int_per_batch = 2  # How many estimates of integral should be output per batch ( x in array )
+batches = 1000  # Number of times that sets of integral should be estimated ( y in array )
+int_per_batch = 3  # How many estimates of integral should be output per batch ( x in array )
 
 chunk_size = 10**7 # for RAM management, decrease for less RAM (current system uses 32gb) -- untested at higher values
 
@@ -22,7 +22,7 @@ def int_estimate(n, a, b):
     sum_function_output = 0 # sum of the height values taken of the function values
     total_points = 0 # total number of point (x) estimates taken
     num_chunks = (n + chunk_size - 1) // chunk_size
-    with tqdm(total=num_chunks) as pbar: # defines progress bar
+    with tqdm(total=num_chunks) as pbar: # defines progress pbar
         while n > 0: # continues monte carlo until permutations are finished
             current_chunk = min(n, chunk_size)
             x = np.random.uniform(a, b, current_chunk) # takes a random number x within the bounds of the integral
@@ -35,18 +35,19 @@ def int_estimate(n, a, b):
 
 # Integration bounds
 a = 0  # Lower bound of the integral
-b = 5  # Upper bound of the integral
+b = np.pi / 2  # Upper bound of the integral
 
 # Loop that runs the int_estimate function over a number of permutations and organizes them into a matrix
 histories = 100 # number of permutations of integral estimate to perform
 history_count_list = [] # records number of histories performed per batch
 for i in range(batches):
+    print(f'Histories: {histories}')
     num = []
     for i in range(int_per_batch):
         num.append(int_estimate(histories, a, b))
     history_count_list.append(histories)
     calc_int.append(num)
-    histories *= 10 # multiplies the history count by 10 each batch, used for data analysis in intplot.py -- can be safely removed/edited
+    histories += 100 # multiplies the history count by 10 each batch, used for data analysis in intplot.py -- can be safely removed/edited
 
 
 # Print the integral values
