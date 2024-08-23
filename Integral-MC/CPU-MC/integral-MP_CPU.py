@@ -6,7 +6,7 @@ import os
 
 start = time.time()  # Start timing the process
 
-batches = 1000  # Number of times that sets of integral should be estimated ( y in array )
+batches = 100000  # Number of times that sets of integral should be estimated ( y in array )
 int_per_batch = 3  # How many estimates of integral should be output per batch ( x in array )
 
 chunk_size = 10**7 # for RAM management, decrease for less RAM (current system uses 32gb) -- untested at higher values
