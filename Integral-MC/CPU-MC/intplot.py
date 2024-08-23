@@ -30,3 +30,4 @@ plt.plot(history_count_list, std_list)
 
 # show graphs
 plt.show()
+

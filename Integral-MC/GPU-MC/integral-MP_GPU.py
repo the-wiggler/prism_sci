@@ -8,31 +8,31 @@ import os
 
 start = time.time()  # Start timing the process
 
-batches = 9  # Number of times that sets of integral should be estimated ( y in array )
-int_per_batch = 2  # How many estimates of integral should be output per batch ( x in array )
+batches = 10000  # Number of times that sets of integral should be estimated ( y in array )
+int_per_batch = 5  # How many estimates of integral should be output per batch ( x in array )
 
-chunk_size = 10**7 # for RAM management, decrease for less ram (current system uses 32gb) -- untested at higher values
+chunk_size = 10**7 # for RAM management, decrease for less RAM (current system uses 32gb) -- untested at higher values
 
 calc_int = [] # list that the calculated integral estimations are put into
 
 # INPUT FUNCTION HERE
 def f(x):
-    return cp.sqrt(9-(x-3)**2)
+    return x ** 2
 
 # Monte Carlo method to calculate the integral over (a, b)
 def int_estimate(n, a, b):
-    total_func = 0 # sum of the height values taken of the function values
+    sum_function_output = 0 # sum of the height values taken of the function values
     total_points = 0 # total number of point (x) estimates taken
     num_chunks = (n + chunk_size - 1) // chunk_size
     with tqdm(total=num_chunks) as pbar: # defines progress bar
         while n > 0: # continues monte carlo until permutations are finished
             current_chunk = min(n, chunk_size)
             x = cp.random.uniform(a, b, current_chunk) # takes a random number x within the bounds of the integral
-            total_func += cp.sum(f(x)) # substitutes each x value into the function to get their y value, or vertical distance from y=0
-            total_points += current_chunk # adds total amount of points
+            sum_function_output += cp.sum(f(x)) # substitutes each x value into the function to get their y value, or vertical distance from y=0
+            total_points += current_chunk # adds total amount of points to the 1/N term
             n -= current_chunk # lets n approach 0
             pbar.update(1) # updates progress bar
-        estimate_output = (b - a) * (total_func / total_points) # (b-a) is the width of the integral----(sum/points) calculates the average height of the function----its like finding the area of a square
+        estimate_output = (b - a) * (sum_function_output / total_points) # I ≈ (b - a) * (1/N) * Σ f(Xi)
         return estimate_output
 
 # Integration bounds
@@ -40,7 +40,7 @@ a = 0  # Lower bound of the integral
 b = 5  # Upper bound of the integral
 
 # Loop that runs the int_estimate function over a number of permutations and organizes them into a matrix
-histories = 100 # number of permutations of integral estimate to perform
+histories = 1000 # number of permutations of integral estimate to perform
 history_count_list = [] # records number of histories performed per batch
 for i in range(batches):
     num = []
@@ -48,7 +48,7 @@ for i in range(batches):
         num.append(int_estimate(histories, a, b))
     history_count_list.append(histories)
     calc_int.append(num)
-    histories *= 10 # multiplies the history count by 10 each batch, used for data analysis in intplot.py -- can be safely removed/edited
+    histories += 100
 
 
 # Print the integral values
