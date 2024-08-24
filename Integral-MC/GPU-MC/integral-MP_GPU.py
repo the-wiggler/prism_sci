@@ -8,8 +8,8 @@ import os
 
 start = time.time()  # Start timing the process
 
-batches = 10000  # Number of times that sets of integral should be estimated ( y in array )
-int_per_batch = 5  # How many estimates of integral should be output per batch ( x in array )
+batches = 2000  # Number of times that sets of integral should be estimated ( y in array )
+int_per_batch = 3  # How many estimates of integral should be output per batch ( x in array )
 
 chunk_size = 10**7 # for RAM management, decrease for less RAM (current system uses 32gb) -- untested at higher values
 
@@ -32,23 +32,32 @@ def int_estimate(n, a, b):
             total_points += current_chunk # adds total amount of points to the 1/N term
             n -= current_chunk # lets n approach 0
             pbar.update(1) # updates progress bar
-        estimate_output = (b - a) * (sum_function_output / total_points) # I ≈ (b - a) * (1/N) * Σ f(Xi)
+        estimate_output = (b - a) * (sum_function_output / total_points) # I ≈ (b - a) * (1/N) * Σ f(xi)
         return estimate_output
 
 # Integration bounds
 a = 0  # Lower bound of the integral
-b = 5  # Upper bound of the integral
-
+b = cp.pi / 2  # Upper bound of the integral
 # Loop that runs the int_estimate function over a number of permutations and organizes them into a matrix
-histories = 1000 # number of permutations of integral estimate to perform
+# histories = 100 # number of permutations of integral estimate to perform
 history_count_list = [] # records number of histories performed per batch
-for i in range(batches):
-    num = []
-    for i in range(int_per_batch):
-        num.append(int_estimate(histories, a, b))
-    history_count_list.append(histories)
-    calc_int.append(num)
-    histories += 100
+batch_times = [] # records the time taken per batch
+for n in range(150):
+    histories = 100
+    for i in range(batches):
+        batch_start_time = time.time()
+        num = []
+        print(f'Histories: {histories}')
+        for i in range(int_per_batch):
+            num.append(int_estimate(histories, a, b))
+        history_count_list.append(histories)
+        calc_int.append(num)
+        histories += 100
+        batch_time = time.time() - batch_start_time  # Calculate the time taken for this batch
+        batch_times_y = []
+        batch_times_y.append(batch_time)  # Store the batch time
+        batch_times.append(batch_times_y)
+batch_times = cp.array(batch_times)
 
 
 # Print the integral values
@@ -81,5 +90,7 @@ np.save(os.path.join('np_store', 'calc_int.npy'), calc_int.get())
 np.save(os.path.join('np_store', 'avg_calc_int.npy'), avg_calc_int.get())
 np.save(os.path.join('np_store', 'std_list.npy'), std_list.get())
 np.save(os.path.join('np_store', 'history_count_list.npy'), history_count_list)
+np.save(os.path.join('np_store', 'batch_times.npy'), batch_times.get())
+
 
 print(f'EXECUTION TIME: {time.time() - start} SECONDS')  # Output the execution time

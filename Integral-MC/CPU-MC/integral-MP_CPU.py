@@ -22,7 +22,7 @@ def int_estimate(n, a, b):
     sum_function_output = 0 # sum of the height values taken of the function values
     total_points = 0 # total number of point (x) estimates taken
     num_chunks = (n + chunk_size - 1) // chunk_size
-    with tqdm(total=num_chunks) as pbar: # defines progress pbar
+    with tqdm(total=num_chunks) as pbar: # defines progress bar
         while n > 0: # continues monte carlo until permutations are finished
             current_chunk = min(n, chunk_size)
             x = np.random.uniform(a, b, current_chunk) # takes a random number x within the bounds of the integral
