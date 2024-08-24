@@ -6,7 +6,7 @@ import os
 
 start = time.time()  # Start timing the process
 
-batches = 9000  # Number of times that sets of integral should be estimated ( y in array )
+batches = 2000  # Number of times that sets of integral should be estimated ( y in array )
 int_per_batch = 3  # How many estimates of integral should be output per batch ( x in array )
 
 chunk_size = 10**7 # for RAM management, decrease for less RAM (current system uses 32gb) -- untested at higher values
@@ -38,22 +38,23 @@ a = 0  # Lower bound of the integral
 b = np.pi / 2  # Upper bound of the integral
 
 # Loop that runs the int_estimate function over a number of permutations and organizes them into a matrix
-histories = 100 # number of permutations of integral estimate to perform
 history_count_list = [] # records number of histories performed per batch
 batch_times = [] # records the time taken per batch
-for i in range(batches):
-    batch_start_time = time.time()
-    print(f'Histories: {histories}')
-    num = []
-    for i in range(int_per_batch):
-        num.append(int_estimate(histories, a, b))
-    history_count_list.append(histories)
-    calc_int.append(num)
-    histories += 100 # multiplies the history count by 10 each batch, used for data analysis in intplot.py -- can be safely removed/edited
-    batch_time = time.time() - batch_start_time  # Calculate the time taken for this batch
-    batch_times_y = []
-    batch_times_y.append(batch_time)  # Store the batch time
-    batch_times.append(batch_times_y)
+for n in range(1): # repeats the same batch calculation over again for analysis of data variance placement patterns
+    histories = 100  # number of permutations of integral estimate to perform
+    for i in range(batches):
+        batch_start_time = time.time()
+        print(f'Histories: {histories}')
+        num = []
+        for i in range(int_per_batch):
+            num.append(int_estimate(histories, a, b))
+        history_count_list.append(histories)
+        calc_int.append(num)
+        histories += 100 # multiplies the history count by 10 each batch, used for data analysis in intplot.py -- can be safely removed/edited
+        batch_time = time.time() - batch_start_time  # Calculate the time taken for this batch
+        batch_times_y = []
+        batch_times_y.append(batch_time)  # Store the batch time
+        batch_times.append(batch_times_y)
 batch_times = np.array(batch_times)
 
 

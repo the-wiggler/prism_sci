@@ -42,7 +42,7 @@ b = cp.pi / 2  # Upper bound of the integral
 # histories = 100 # number of permutations of integral estimate to perform
 history_count_list = [] # records number of histories performed per batch
 batch_times = [] # records the time taken per batch
-for n in range(150):
+for n in range(20): # repeats the same batch calculation over again for analysis of data variance placement patterns
     histories = 100
     for i in range(batches):
         batch_start_time = time.time()
