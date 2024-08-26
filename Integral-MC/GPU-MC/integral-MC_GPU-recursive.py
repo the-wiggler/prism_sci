@@ -5,6 +5,7 @@ import numpy as np
 from tqdm import tqdm
 import time
 import os
+from scipy import integrate
 
 start = time.time()  # Start timing the process
 
